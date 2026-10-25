@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Granja Suína - Agricultura Familiar</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 15px;
+            color: #2c3e50;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #1b4332;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+        }
+        h2 {
+            color: #2d6a4f;
+            margin-top: 0;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #d8f3dc;
+            padding-bottom: 8px;
+        }
+        .card {
+            background: white;
+            padding: 18px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+        input[type="file"] {
+            background-color: #f8f9fa;
+            padding: 6px;
+        }
+        button {
+            background-color: #2d6a4f;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #1b4332;
+        }
+        .matriz-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            background-color: #fafbfc;
+            position: relative;
+        }
+        .matriz-foto {
+            width: 80px;
+            height: 80px;
+            min-width: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid #2d6a4f;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: #6c757d;
+        }
+        .matriz-info {
+            flex-grow: 1;
+        }
+        .matriz-info h3 {
+            margin: 0 0 4px 0;
+            color: #1b4332;
+            font-size: 1.05rem;
+        }
+        .matriz-detalhes {
+            font-size: 0.88rem;
+            color: #495057;
+            line-height: 1.4;
+        }
+        .badge-gestante {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.78rem;
+            margin-top: 4px;
+        }
+        .badge-vazia {
+            display: inline-block;
+            background-color: #27ae60;
+            color: white;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.78rem;
+            margin-top: 4px;
+        }
+        .img-preview {
+            max-width: 90px;
+            max-height: 90px;
+            border-radius: 6px;
+            display: none;
+            margin-top: 8px;
+        }
+
+        /* ESTILOS DE CONTROLE E EXCLUSÃO */
+        .btn-excluir {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            width: auto;
+            margin-top: 8px;
+        }
+        .btn-excluir:hover {
+            background-color: #c0392b;
+        }
+        .header-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .lote-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            background-color: #fafbfc;
+        }
+        .racao-box {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #cbd5e1;
+            font-size: 0.9rem;
+        }
+        .racao-total {
+            color: #1b4332;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .form-racao-inline {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .form-racao-inline input {
+            width: 100px;
+            padding: 6px 8px;
+        }
+        .form-racao-inline select {
+            width: 120px;
+            padding: 6px 8px;
+        }
+        .btn-add-racao {
+            width: auto;
+            margin-top: 0;
+            padding: 7px 14px;
+            font-size: 0.85rem;
+            background-color: #38a169;
+        }
+
+        /* ADAPTAÇÃO PARA CELULAR */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            .matriz-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .matriz-foto {
+                width: 100%;
+                height: 160px;
+            }
+            .header-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .form-racao-inline {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .form-racao-inline input, 
+            .form-racao-inline select, 
+            .btn-add-racao {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🐷 Granja Familiar</h1>
+
+    <!-- CADASTRO DE MATRIZ -->
+    <div class="card">
+        <h2>Cadastrar Matriz Suína</h2>
+        <form id="formMatriz" onsubmit="cadastrarMatriz(event)">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Nome / Apelido:</label>
+                    <input type="text" id="nomeMatriz" placeholder="Ex: Branquinha, Mimosa..." required>
+                </div>
+                <div class="form-group">
+                    <label>Baia / Localização:</label>
+                    <input type="text" id="baiaMatriz" placeholder="Ex: Baia 01, Chiqueiro do Fundo..." required>
+                </div>
+                <div class="form-group">
+                    <label>Cor / Pelagem:</label>
+                    <input type="text" id="corMatriz" placeholder="Ex: Branca, Manchada..." required>
+                </div>
+                <div class="form-group">
+                    <label>Idade (meses):</label>
+                    <input type="number" id="idadeMatriz" required>
+                </div>
+                <div class="form-group">
+                    <label>Peso (kg):</label>
+                    <input type="number" step="0.1" id="pesoMatriz" required>
+                </div>
+                <div class="form-group">
+                    <label>Está Gestante?</label>
+                    <select id="gestanteMatriz" onchange="alternarDataGestacao()">
+                        <option value="nao">Não</option>
+                        <option value="sim">Sim</option>
+                    </select>
+                </div>
+                <div class="form-group full-width" id="campoDataGestacao" style="display: none;">
+                    <label>Data de Início da Gestação:</label>
+                    <input type="date" id="dataInicioGestacao">
+                </div>
+                <div class="form-group full-width">
+                    <label>Foto da Matriz:</label>
+                    <input type="file" id="fotoMatriz" accept="image/*" onchange="mostrarPreview(this)">
+                    <img id="imgPreview" class="img-preview" alt="Prévia da foto">
+                </div>
+            </div>
+            <button type="submit">Cadastrar Matriz</button>
+        </form>
+    </div>
+
+    <!-- LISTAGEM -->
+    <div class="card">
+        <h2>Matrizes Cadastradas</h2>
+        <div id="listaMatrizes">Nenhuma matriz cadastrada ainda.</div>
+    </div>
+
+    <!-- NINHADAS -->
+    <div class="card">
+        <h2>Registrar Ninhada de Leitões</h2>
+        <form id="formNinhada" onsubmit="registrarNinhada(event)">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Selecione a Mãe:</label>
+                    <select id="selectMaeNinhada">
+                        <option value="">Nenhuma matriz disponível</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Quantidade de Leitões Vivos:</label>
+                    <input type="number" id="qtdLeitoes" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Data do Parto / Cria:</label>
+                    <input type="date" id="dataCria" required>
+                </div>
+            </div>
+            <button type="submit">Registrar Ninhada</button>
+        </form>
+    </div>
+
+    <!-- ACOMPANHAMENTO E LANÇAMENTO DE RAÇÃO -->
+    <div class="card">
+        <h2>Acompanhamento de Leitões e Ração</h2>
+        <div id="listaNinhadas">Nenhuma ninhada registrada ainda.</div>
+    </div>
+</div>
+
+<script>
+    const matrizes = JSON.parse(localStorage.getItem('matrizes_granja')) || [];
+    const ninhadas = JSON.parse(localStorage.getItem('ninhadas_granja')) || [];
+    const TEMPO_GESTAO_DIAS = 114;
+    const PESO_SACO_KG = 40;
+    let contadorId = parseInt(localStorage.getItem('contadorId_granja')) || 1;
+
+    window.onload = function() {
+        atualizarListaMatrizes();
+        atualizarSelectMaes();
+        atualizarListaNinhadas();
+    };
+
+    function guardarNoLocalStorage() {
+        localStorage.setItem('matrizes_granja', JSON.stringify(matrizes));
+        localStorage.setItem('ninhadas_granja', JSON.stringify(ninhadas));
+        localStorage.setItem('contadorId_granja', contadorId);
+    }
+
+    function alternarDataGestacao() {
+        const gestante = document.getElementById('gestanteMatriz').value;
+        const campoData = document.getElementById('campoDataGestacao');
+        campoData.style.display = (gestante === 'sim') ? 'block' : 'none';
+    }
+
+    function mostrarPreview(input) {
+        const preview = document.getElementById('imgPreview');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+
+    function cadastrarMatriz(event) {
+        if (event) event.preventDefault();
+
+        const nome = document.getElementById('nomeMatriz').value.trim();
+        const baia = document.getElementById('baiaMatriz').value.trim();
+        const cor = document.getElementById('corMatriz').value.trim();
+        const idade = document.getElementById('idadeMatriz').value;
+        const peso = document.getElementById('pesoMatriz').value;
+        const eGestante = document.getElementById('gestanteMatriz').value === 'sim';
+        const dataInicioVal = document.getElementById('dataInicioGestacao').value;
+        const inputFoto = document.getElementById('fotoMatriz');
+
+        if (!nome || !baia || !cor || !idade || !peso) {
+            alert("Por favor, preencha todos os campos obrigatórios!");
+            return;
+        }
+
+        let dataPrevistaStr = null;
+        if (eGestante && dataInicioVal) {
+            const partes = dataInicioVal.split('-');
+            const dataInicio = new Date(partes[0], partes[1] - 1, partes[2]);
+            const dataPrev = new Date(dataInicio);
+            dataPrev.setDate(dataPrev.getDate() + TEMPO_GESTAO_DIAS);
+            dataPrevistaStr = dataPrev.toISOString();
+        }
+
+        const idMatriz = `#${contadorId++}`;
+
+        const processarEGuardar = (fotoDataUrl) => {
+            matrizes.push({
+                id: idMatriz,
+                nome: nome,
+                baia: baia,
+                cor: cor,
+                idade: idade,
+                peso: peso,
+                gestante: eGestante,
+                dataPrevista: dataPrevistaStr,
+                foto: fotoDataUrl
+            });
+
+            guardarNoLocalStorage();
+            alert(`✅ Matriz "${nome}" cadastrada com sucesso!`);
+            
+            atualizarListaMatrizes();
+            atualizarSelectMaes();
+            document.getElementById('formMatriz').reset();
+            document.getElementById('imgPreview').style.display = 'none';
+            alternarDataGestacao();
+        };
+
+        if (inputFoto.files && inputFoto.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                processarEGuardar(e.target.result);
+            }
+            reader.readAsDataURL(inputFoto.files[0]);
+        } else {
+            processarEGuardar(null);
+        }
+    }
+
+    function excluirMatriz(index) {
+        const m = matrizes[index];
+        if (confirm(`Tem certeza que deseja apagar a matriz "${m.nome}" (${m.id})?`)) {
+            matrizes.splice(index, 1);
+            guardarNoLocalStorage();
+            atualizarListaMatrizes();
+            atualizarSelectMaes();
+        }
+    }
+
+    function atualizarListaMatrizes() {
+        const divLista = document.getElementById('listaMatrizes');
+        if (matrizes.length === 0) {
+            divLista.innerHTML = "Nenhuma matriz cadastrada ainda.";
+            return;
+        }
+
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+
+        let html = "";
+
+        matrizes.forEach((m, index) => {
+            const fotoTag = m.foto 
+                ? `<img src="${m.foto}" class="matriz-foto" alt="${m.nome}">`
+                : `<div class="matriz-foto">Sem Foto</div>`;
+
+            let statusHtml = "";
+            if (m.gestante && m.dataPrevista) {
+                const dataPrev = new Date(m.dataPrevista);
+                const diffTempo = dataPrev - hoje;
+                const diasRestantes = Math.ceil(diffTempo / (1000 * 60 * 60 * 24));
+                const dataFormatada = dataPrev.toLocaleDateString('pt-BR');
+
+                statusHtml = `<div class="badge-gestante">GESTANTE</div><br>
+                <strong>Previsão de Parto:</strong> ${dataFormatada} (Faltam ~${diasRestantes} dias)`;
+            } else {
+                statusHtml = `<div class="badge-vazia">NÃO GESTANTE</div>`;
+            }
+
+            html += `
+            <div class="matriz-card">
+                ${fotoTag}
+                <div class="matriz-info">
+                    <div class="header-item">
+                        <h3>${m.nome} <small style="color:#6c757d; font-weight:normal;">(${m.id})</small></h3>
+                        <button type="button" class="btn-excluir" onclick="excluirMatriz(${index})">🗑️ Apagar Matriz</button>
+                    </div>
+                    <div class="matriz-detalhes">
+                        <strong>Localização:</strong> ${m.baia} | <strong>Cor:</strong> ${m.cor}<br>
+                        <strong>Idade:</strong> ${m.idade} meses | <strong>Peso:</strong> ${m.peso} kg<br>
+                        ${statusHtml}
+                    </div>
+                </div>
+            </div>`;
+        });
+
+        divLista.innerHTML = html;
+    }
+
+    function atualizarSelectMaes() {
+        const select = document.getElementById('selectMaeNinhada');
+        if (matrizes.length === 0) {
+            select.innerHTML = `<option value="">Nenhuma matriz disponível</option>`;
+            return;
+        }
+
+        let options = "";
+        matrizes.forEach(m => {
+            options += `<option value="${m.id}">${m.nome} (${m.id} - ${m.baia})</option>`;
+        });
+        select.innerHTML = options;
+    }
+
+    function registrarNinhada(event) {
+        if (event) event.preventDefault();
+
+        const selectMae = document.getElementById('selectMaeNinhada');
+        const idMae = selectMae.value;
+        const qtd = document.getElementById('qtdLeitoes').value;
+        const dataCriaVal = document.getElementById('dataCria').value;
+
+        if (!idMae || !qtd || !dataCriaVal) {
+            alert("Preencha todos os campos da ninhada!");
+            return;
+        }
+
+        const partes = dataCriaVal.split('-');
+        const dataCria = new Date(partes[0], partes[1] - 1, partes[2]);
+
+        const matrizMae = matrizes.find(m => m.id === idMae);
+        const nomeMae = matrizMae ? matrizMae.nome : "Matriz";
+
+        ninhadas.push({
+            idMae,
+            nomeMae,
+            qtd,
+            dataCria: dataCria.toISOString(),
+            totalKgRacao: 0
+        });
+
+        guardarNoLocalStorage();
+        alert("✅ Ninhada registrada com sucesso!");
+        atualizarListaNinhadas();
+        document.getElementById('formNinhada').reset();
+    }
+
+    function excluirNinhada(index) {
+        if (confirm(`Tem certeza que deseja apagar o registro do Lote ${index + 1}?`)) {
+            ninhadas.splice(index, 1);
+            guardarNoLocalStorage();
+            atualizarListaNinhadas();
+        }
+    }
+
+    function adicionarRacao(index) {
+        const inputQtd = document.getElementById(`qtdRacao_${index}`);
+        const selectUnidade = document.getElementById(`unidadeRacao_${index}`);
+        
+        const valor = parseFloat(inputQtd.value);
+        const unidade = selectUnidade.value;
+
+        if (isNaN(valor) || valor <= 0) {
+            alert("Digite uma quantidade válida de ração!");
+            return;
+        }
+
+        let kgAdicionados = valor;
+        if (unidade === 'sacos') {
+            kgAdicionados = valor * PESO_SACO_KG;
+        }
+
+        ninhadas[index].totalKgRacao = (ninhadas[index].totalKgRacao || 0) + kgAdicionados;
+
+        guardarNoLocalStorage();
+        alert(`✅ ${valor} ${unidade} de ração adicionados ao Lote ${index + 1}!`);
+        atualizarListaNinhadas();
+    }
+
+    function atualizarListaNinhadas() {
+        const divLista = document.getElementById('listaNinhadas');
+        if (ninhadas.length === 0) {
+            divLista.innerHTML = "Nenhuma ninhada registrada ainda.";
+            return;
+        }
+
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+
+        let html = "";
+
+        ninhadas.forEach((n, index) => {
+            const dataNasc = new Date(n.dataCria);
+            const diffTempo = hoje - dataNasc;
+            const idadeDias = Math.floor(diffTempo / (1000 * 60 * 60 * 24));
+
+            let fase = "Maternidade / Lactação";
+            if (idadeDias > 28 && idadeDias <= 70) {
+                fase = "Creche";
+            } else if (idadeDias > 70) {
+                fase = "Crescimento / Terminação";
+            }
+
+            const totalKg = n.totalKgRacao || 0;
+            const totalSacos = (totalKg / PESO_SACO_KG).toFixed(1);
+
+            html += `
+            <div class="lote-item">
+                <div class="header-item">
+                    <div>
+                        <strong>Lote ${index + 1}</strong> (Mãe: ${n.nomeMae}) — 
+                        <strong>${n.qtd} leitões</strong> | 
+                        Idade: <strong>${idadeDias} dias</strong> | 
+                        Fase: <em>${fase}</em>
+                    </div>
+                    <button type="button" class="btn-excluir" onclick="excluirNinhada(${index})">🗑️ Apagar Lote</button>
+                </div>
+
+                <div class="racao-box">
+                    <div class="racao-total">
+                        🌾 <strong>Consumo Total de Ração:</strong> ${totalKg} kg <small style="color:#718096;">(~${totalSacos} sacos de 40kg)</small>
+                    </div>
+                    <div class="form-racao-inline">
+                        <input type="number" id="qtdRacao_${index}" placeholder="Qtd" step="0.1" min="0.1">
+                        <select id="unidadeRacao_${index}">
+                            <option value="sacos">sacos (40kg)</option>
+                            <option value="kg">kg</option>
+                        </select>
+                        <button type="button" class="btn-add-racao" onclick="adicionarRacao(${index})">+ Lançar Ração</button>
+                    </div>
+                </div>
+            </div>`;
+        });
+
+        divLista.innerHTML = html;
+    }
+</script>
+
+</body>
+</html>
